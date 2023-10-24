@@ -1,5 +1,4 @@
 library(tidyverse)
-library(patchwork)
 library(ggh4x)
 
 ggplot(data = mpg, 
