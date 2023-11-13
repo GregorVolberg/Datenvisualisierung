@@ -92,11 +92,26 @@ ggplot(mpg, aes(displ, hwy)) +
     breaks = seq(0,50,10),
     minor_breaks = seq(5,45,10),
     guide = "axis_minor") +
-  theme_bw() +
+  theme_classic() +
   theme(
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    legend.position = "none",
-    axis.ticks.length = unit(0.25, "cm"),
+    axis.ticks.length = unit(0.2, "cm"),
     ggh4x.axis.ticks.length.minor = rel(0.5))
+
+# export
+myPlot <- ggplot(data = mpg, 
+                 mapping = aes(x = displ,
+                               y = hwy)) +
+  scale_x_continuous(limits = c(0, 8),
+                     name = "Displacement") + 
+  scale_y_continuous(limits = c(5, 45),
+                     name = "Mileage") +
+  theme_classic() +
+  geom_point()
+
+ggsave(filename = "myPlot.svg", 
+       plot = myPlot,
+       width = 5,
+       height = 5,
+       units = 'cm',
+       dpi = 300)
 
