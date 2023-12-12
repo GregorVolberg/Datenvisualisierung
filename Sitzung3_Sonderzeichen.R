@@ -11,5 +11,11 @@ ggplot(dat, aes(x = x, y = y)) +
   theme_classic() +
   annotate("text", x = -1, y = 1,
           label = paste0("\u03B2 = ",
-                         round(coeff[2], 3)))
+                         round(coeff[2], 3))) +
+  theme(axis.title.y = 
+          element_text(margin = margin(t = 0,
+                                       r = 10,
+                                       b = 0,
+                                       l = 0)))
 
+  
