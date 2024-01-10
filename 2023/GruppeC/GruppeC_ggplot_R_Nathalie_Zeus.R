@@ -1,6 +1,6 @@
 library(tidyverse)
 library(ggplot2)
-library("patchwork")
+library(patchwork)
 library(readxl)
 
 set.seed(12)
@@ -56,8 +56,16 @@ plotN <- ggplot(rawN2, aes(x = sequence, y = switchRate)) +
 
 ## Legende ändern, Beschriftungen hinzufügen, p-Values hinzufügen
 
-plotN +
+plotN + 
   theme(legend.position = "none") +
+  theme(axis.title.y = element_text(margin = margin(t = 0,
+                                                    r = 15,
+                                                    b = 0,
+                                                    l = 0))) +
+  theme(axis.title.x = element_text(margin = margin(t =10,
+                                                    r = 0,
+                                                    b = 0,
+                                                    l = 0))) +
   annotate("text", x = 0.95, y = 68,
            label = "reward",
            vjust = "center", hjust = "right",
@@ -84,5 +92,4 @@ plotN +
   annotate("text",
            x = 2.5,
            y = 81,
-           #label = "p <= .001")
-           label = c("p \u2264 .001"))
+           label = "p \u2264 .001")
