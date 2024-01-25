@@ -12,18 +12,17 @@ raw <- read.spss(filename) %>%
   mutate(ID = as_factor(str_replace(ID,
                                     "          ",
                                     "abcdefghij")))
-<<<<<<< HEAD
 #======= vsr
 vsr <- raw %>% select(age, sex,ID,
                VSRrlow1:VSRdec4) %>%
         pivot_longer(
-        cols = VSRrlow1:VSRdec4,
-        names_to = "tmp",
-        values_to = "vsr") %>%
-      mutate(block = as_factor(str_sub(tmp, -1)),
+          cols = VSRrlow1:VSRdec4,
+          names_to = "tmp",
+          values_to = "vsr") %>%
+        mutate(block = as_factor(str_sub(tmp, -1)),
              condition = as_factor(str_sub(tmp, -4, -2)),
              sex = as_factor(sex)) %>%
-      select(-tmp)
+        select(-tmp)
 
 #===== RT and errors (collapsed across blocks)
 rt <- raw %>% select(age, sex,ID,
@@ -41,36 +40,7 @@ rt <- raw %>% select(age, sex,ID,
          sex = as_factor(sex)) %>%
   select(-tmp, -rs) %>%
   pivot_wider(names_from = ert, values_from = tmpval) %>%
-  #rename(error = E, rt = R)
   group_by(ID, condition, rep_swtch) %>%
   summarise(error = mean(R, na.rm = T),
             rt = mean(R, na.rm = T)) %>%
   ungroup()
-=======
-raw %>% pivot_longer(
-  cols = VSRrlow1:VSRdec4,
-  names_to = c("VSR", "gender", "age"),
-  names_pattern = "new_?(.*)_(.)(.*)",
-  values_to = "VSR"
-)
-)
-
-%>%
-  pivot_longer()
-  rename("n_sessions" = vp_nr) %>%
-  mutate(vp = as_factor(str_c("vp", 1:nrow(.)))) %>%
-  pivot_longer(cols = c(Vortest_PRL:Nachtest_OPP),
-               names_to  = "prepost",
-               values_to = "val") %>%
-  separate(prepost, into = c("prepost", "av")) %>%
-  pivot_wider(names_from = av, values_from = val) %>%
-  mutate(n_sessions = fct_recode(n_sessions, 
-                        vier = "vier sitzungen",
-                        acht = "acht sitzungen"),
-         prepost = fct_recode(prepost,
-                        pre = "Vortest",
-                        post = "Nachtest")) %>%
-  select(vp, n_sessions, prepost, PRL, OPP) %>%
-  write_csv(file = "./2023/GruppeB/Julia.csv")
-
-#dat <- read_csv(file = './2023/GruppeB/Julia.csv')
