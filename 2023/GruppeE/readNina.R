@@ -41,6 +41,6 @@ rt <- raw %>% select(age, sex,ID,
   select(-tmp, -rs) %>%
   pivot_wider(names_from = ert, values_from = tmpval) %>%
   group_by(ID, condition, rep_swtch) %>%
-  summarise(error = mean(R, na.rm = T),
+  summarise(error = mean(E, na.rm = T),
             rt = mean(R, na.rm = T)) %>%
   ungroup()
