@@ -1,4 +1,5 @@
 source('./2023/GruppeE/readSophie.r')
+library(patchwork)
 
 # difference score and residuals
 dat <- raw %>%
@@ -8,14 +9,42 @@ dat <- raw %>%
          cgt1res   = lm(vsrdiff ~ pssa + poimax)$residuals)
 
 # 4a
-lmres <- lm(poimaxres ~ poimax, data = dat)
-dat %>% ggplot(aes(x = poimax, y = poimaxres)) + 
+plt1 <- dat %>% 
+  mutate(x = poimax, y = poimaxres) %>%
+  ggplot(aes(x = x, y = y)) + 
   geom_point() +
-  geom_abline(slope     = lmres$coefficients[1],
-              intercept = lmres$coefficients[2],
-              ty) +
-  labs(x = "poimaxres",
-       y = "Difference voluntary switch rate (%)") +
-  theme_classic()
+  geom_smooth(method = "lm", 
+              se = 1,
+              color = 'darkgray') +
+  theme_classic() +
+  labs(y = "Difference voluntary switch rate (%)",
+       x = "Maximal res (?)",
+       tag = "A")
 
-  ggplot(aes(x = poimaxres, y = vsrdiff)) + 
+# 5a
+plt2 <- dat %>% 
+  mutate(x = pssa, y = pssares) %>%
+  ggplot(aes(x = x, y = y)) + 
+  geom_point() +
+  geom_smooth(method = "lm", 
+              se = 1,
+              color = 'darkgray') +
+  theme_classic() +
+  labs(y = "Difference voluntary switch rate (%)",
+       x = "pssa (?)",
+       tag = "B") 
+
+# 6a
+plt3 <- dat %>% 
+  mutate(x = cgt1, y = cgt1res) %>%
+  ggplot(aes(x = x, y = y)) + 
+  geom_point() +
+  geom_smooth(method = "lm", 
+              se = 1,
+              color = 'darkgray') +
+  theme_classic() +
+  labs(y = "Difference voluntary switch rate (%)",
+       x = "pssa (?)",
+       tag = "C") 
+
+plt1 + plt2 + plt3
