@@ -12,7 +12,7 @@ ggplot(mpg, aes(displ, hwy)) +
 
 ### mapping Drittvariable
 ggplot(mpg, aes(displ, hwy,
-                color = class)) +
+                shape = class)) +
   geom_point()
 
 ggplot(mpg, aes(displ, hwy)) +
@@ -122,13 +122,11 @@ ggplot(mpg, aes(displ, hwy)) +
   theme_classic()
 
 
-# export
-myPlot <- ggplot(mpg, 
-                 aes(displ, hwy)) +
-  geom_point() + 
+# arrangieren
+myPlot <- ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
   theme_classic()
 
-# arrangieren
 plot1 <- myPlot + labs(tag = "A")
 plot2 <- myPlot + labs(tag = "B")
 
@@ -136,6 +134,7 @@ plot1 | plot2
 plot1 | plot2 / plot1
 
 
+# export
 ggsave(filename = "myPlot.svg", 
        plot = myPlot,
        width = 5,
