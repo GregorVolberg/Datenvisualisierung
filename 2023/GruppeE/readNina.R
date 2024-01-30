@@ -21,6 +21,11 @@ vsr <- raw %>% select(age, sex,ID,
           values_to = "vsr") %>%
         mutate(block = as_factor(str_sub(tmp, -1)),
              condition = as_factor(str_sub(tmp, -4, -2)),
+             condition = fct_recode(condition,
+                                    high = "igh",
+                                    decrease = "dec",
+                                    low = "low",
+                                    increase = "inc"),
              sex = as_factor(sex)) %>%
         select(-tmp)
 
@@ -33,9 +38,14 @@ rt <- raw %>% select(age, sex,ID,
     values_to = "tmpval") %>%
   mutate(block = as_factor(str_sub(tmp, -1)),
          condition = as_factor(str_sub(tmp, -5, -3)),
+         condition = fct_recode(condition,
+                                high = "igh",
+                                decrease = "dec",
+                                low = "low",
+                                increase = "inc"),
          ert = str_sub(tmp, 1, 1),
          rs  = as_factor(str_sub(tmp, -2, -2)),
-         rep_swtch = fct_recode(rs, rept = "r", 
+         rep_swtch = fct_recode(rs, repetition = "r", 
                                  switch = "s"),
          sex = as_factor(sex)) %>%
   select(-tmp, -rs) %>%

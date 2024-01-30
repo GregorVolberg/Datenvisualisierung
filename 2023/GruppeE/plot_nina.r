@@ -1,16 +1,15 @@
 source('./2023/GruppeE/readNina.r')
 library(patchwork)
-library(ggbreak)
 
 # color blind palette
 cbPalette <- c("#999999", "#E69F00", "#56B4E9", 
                "#009E73", "#F0E442", "#0072B2",
                "#D55E00", "#CC79A7")
 
+#==== vsr
 ggplot(vsr, aes(x = block, y = vsr)) +
   scale_color_manual(values = cbPalette) +
-  coord_cartesian(ylim = c(0, 40)) +
-   # achtung mit scale_y_continuous: stats macht nur stats über die mit den Skalenenden sichtbaren Punkte!!
+  coord_cartesian(ylim = c(0, 40)) + # achtung mit scale_y_continuous: stats macht nur stats über die mit den Skalenenden sichtbaren Punkte
   stat_summary(
     aes(group = condition, color = condition),
     fun.data = "mean_se",
@@ -28,21 +27,13 @@ ggplot(vsr, aes(x = block, y = vsr)) +
        y = "Voluntary Switch Rate (%)",
        tag = "B") +
   theme_classic() +
-  theme(legend.position = "none") +
-  annotate("text", x = 0.9, y = 22,
-           label = 'remain low',
-           vjust = 'center', hjust = 'center',
-           color = cbPalette[1]) +
-  annotate("text", x = 1.3, y = 20,
-           label = 'increase',
-           vjust = 'center', hjust = 'center',
-           color = cbPalette[2])
-# remain high
-# decrease
+  theme(legend.position = c(0.75,0.4),
+            legend.title    = element_blank())
 
-ggplot(rt, aes(x = condition, y = rt)) +
-  scale_color_manual(values = cbPalette) +
-  coord_cartesian(ylim = c(200, 650)) +
+#===== rt
+pltA1 <- ggplot(rt, aes(x = condition, y = rt)) +
+  scale_color_manual(values = cbPalette[5:6]) +
+  coord_cartesian(ylim = c(400, 650)) +
   stat_summary(
     aes(group = rep_swtch, color = rep_swtch),
     fun.data = "mean_se",
@@ -56,70 +47,28 @@ ggplot(rt, aes(x = condition, y = rt)) +
     size = 0.6,
     linewidth = 1,
     position = position_dodge(0.2)) +
+  theme_classic() +
+  theme(legend.position = c(0.25,0.2),
+        legend.title    = element_blank(),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.line.x=element_blank()) +
+  labs(y = "Reaction time (ms)",
+       tag = "A")
+
+pltA2 <- ggplot(rt, aes(x = condition, y = error)) +
+  scale_fill_manual(values = cbPalette[5:6]) +
+  coord_cartesian(ylim = c(0, 15)) +
   stat_summary(
-    aes(y = error*10+200, group = rep_swtch, fill = rep_swtch),
+    aes(group = rep_swtch, fill = rep_swtch),
     fun.data = "mean_se",
     geom = "bar", 
-    width = 0.3,
-    position = position_dodge2(0.2, padding = 0.1)) +
-  scale_y_continuous(sec.axis=sec_axis(~.*0.1-200,name="Percentage")) +
-  theme_classic()
-
-  
-
-  stat_summary(
-    aes(group = rep_swtch, color = rep_swtch),
-    fun.data = "mean_se",
-    geom = "bar", 
-    linewidth = 1,
-    position = position_dodge(0.2))
-  
-  
-
-
-
-rt %>% group_by (condition, rep_swtch) %>%
-  summarise(merror = mean(error, na.rm=T), mrt = mean(rt, na.rm=T))
-ggplot(rt, aes(x = block, y = vsr)) +
-  scale_color_manual(values = cbPalette) +
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-plt1 <- ggplot(raw, aes(x = gruppe, y = wmt)) +
-  geom_jitter(width = 0.1,
-              color = 'darkgrey') +
-  stat_summary(aes(group = gruppe),
-  fun.data="mean_se",
-  fun.args = list(mult = 1.0), 
-  size = 0.6,
-  linewidth = 1) +
-  scale_y_continuous(limits = c(0,20)) + 
-  scale_color_manual(values = cbPalette) +
-  theme_classic() + 
+    width = 0.2,
+    position = position_dodge2(0.2))  +
+  theme_classic() +
   theme(legend.position = "none") +
-  labs(x = 'Gruppe',
-       y = 'Punkte WMT-2')
+  labs(y = "Errors (%)",
+       x = "Condition")
 
+pltA1 + pltA2 + plot_layout(heights = c(2,1))
