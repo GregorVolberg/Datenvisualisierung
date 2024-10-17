@@ -90,6 +90,29 @@ scale_fill_manual() für innen
   geom_col(position = "dodge", stat = "summary", fun.y = "mean")
   
 # abstand zwischen 2*2 plots entweder mit Paket patchwork (2 plots nebeneinander)
-# oder 
-  
+# alternative??
+
+
+library(ggExtra)
+df3 <- as_tibble(data.frame(var1 = rnorm(60),
+                            var2 = rnorm(60),
+                 gruppe = as_factor(rep(c("A","B"),30))))   
+
+plt1 <- ggplot(df3, aes(x = var1, y = var2, color = gruppe)) +
+  geom_point() +
+  scale_color_manual(values = cbPalette) +
+  geom_smooth(aes(group = gruppe), method='lm',
+              fullrange = TRUE) +
+  theme_classic() +
+  theme(legend.position="none")
+
+plt2 <- ggMarginal(plt1, type = 'density', 
+                         xparams = list(color = cbPalette[1],
+                                        fill  = cbPalette[1]),
+                         yparams = list(color = cbPalette[2],
+                                        fill  = cbPalette[2]))
+
+# noch nicht richtig!
+plt2
+      
   
