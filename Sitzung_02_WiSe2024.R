@@ -99,20 +99,23 @@ df3 <- as_tibble(data.frame(var1 = rnorm(60),
                  gruppe = as_factor(rep(c("A","B"),30))))   
 
 plt1 <- ggplot(df3, aes(x = var1, y = var2, color = gruppe)) +
-  geom_point() +
-  scale_color_manual(values = cbPalette) +
+  geom_point() + # add some jitter to avoid overplotting
+  scale_color_manual(values = cbPalette[2:3]) +
   geom_smooth(aes(group = gruppe), method='lm',
               fullrange = TRUE) +
+  #coord_cartesian(xlim = c(-3,3), ylim = c(-3,3)) + 
   theme_classic() +
-  theme(legend.position="none")
+  theme(legend.position="none") + 
+  scale_x_continuous(expand = expansion(mult = 0.02), limits=c(-3, 3)) +
+  scale_y_continuous(expand = expansion(mult = 0.02), limits=c(-3, 3))
+
 
 plt2 <- ggMarginal(plt1, type = 'density', 
-                         xparams = list(color = cbPalette[1],
-                                        fill  = cbPalette[1]),
-                         yparams = list(color = cbPalette[2],
-                                        fill  = cbPalette[2]))
-
-# noch nicht richtig!
+                   groupColour = TRUE,
+                   groupFill = TRUE)
 plt2
+
+# xlim und ylim schauen
+# jitter schauen
       
-  
+ggMarginal(piris, groupColour = TRUE, )
