@@ -157,9 +157,7 @@ df3 <- as_tibble(data.frame(var1 = rnorm(n),
                             var2 = rnorm(n),
                  gruppe = as_factor(rep(c("A","B"), n/2))))   
 
-# df3 <- as_tibble(data.frame(var1 = sample(1:5,n, replace =T),
-#                             var2 = rnorm(60),
-#                             gruppe = as_factor(rep(c("A","B"),30))))
+
 
 # for continuous x and y, use geom_point
 plt1 <- ggplot(df3, aes(x = var1, y = var2, color = gruppe)) +
