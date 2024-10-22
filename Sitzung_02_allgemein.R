@@ -75,6 +75,7 @@ myPlot <- ggplot(data = mpg,
   theme_classic() +
   geom_point()
 
+# ggfs. Paket svglite installieren
 ggsave(filename = "myPlot.svg", 
        plot = myPlot,
        width = 5,

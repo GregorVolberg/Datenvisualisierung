@@ -120,6 +120,7 @@ g1 | g2
 # mit Bezeichner
 g1 <- g1 + labs(tag = "A")
 g2 <- g2 + labs(tag = "B")
+g1 | g2
 
 # vertikal und horizontal
 g1 / g2 | g2
