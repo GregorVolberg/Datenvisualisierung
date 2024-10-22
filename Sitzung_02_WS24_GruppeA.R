@@ -118,8 +118,8 @@ library(patchwork)
 g1 | g2
 
 # mit Bezeichner
-g1 <- g1 + labs("A")
-g2 <- g2 + labs("B")
+g1 <- g1 + labs(tag = "A")
+g2 <- g2 + labs(tag = "B")
 
 # vertikal und horizontal
 g1 / g2 | g2
