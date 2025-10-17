@@ -29,89 +29,10 @@ df = as_tibble(data.frame(
                rnorm(24, 11, 1)))))
 
 # bar plot
-set.seed(12)
-ggplot(df, 
-             mapping = aes(x = Kontext, y = RT,
-                           fill = Kongruenz)) +
+barp <- ggplot(df, mapping = aes(x = Kontext, y = ER,
+                                 fill = Kongruenz)) +
   geom_bar(aes(group = Kongruenz), 
            stat = "summary",
-           fun.data = "mean_se",
-           fun.args = list(mult = 1), # 1 SE
-           width = 0.5,
-           position = position_dodge(0.6),
-           alpha = 0.4) +
-  scale_fill_manual(values = cbPalette) +
-  geom_jitter(aes(color = Kongruenz),
-              size = 2,
-              position = position_jitterdodge(
-                jitter.width = 0.2,
-                dodge.width  = 0.6)) +
-  scale_color_manual(values = cbPalette) +
-  geom_linerange(aes(group = Kongruenz),
-                 stat = "summary",
-                 fun.data = "mean_se",
-                 fun.args = list(mult = 1), # 1 SE
-                 position = position_dodge(0.6),
-                 size = 1) + 
-  coord_cartesian(ylim = c(300,700),
-                  xlim = c(0.7, 3.3)) +
-  theme_classic() +
-  theme(legend.position = "none") +
-  scale_y_continuous(name = "Reaktionszeit (ms)") + 
-  theme(legend.title = element_blank(),
-        legend.position = c(0.15, 0.9))
-  annotate("text", x = 0.4, y = 690, 
-           label = "kongruent",
-           vjust = "center", hjust = "left",
-           color = cbPalette[1]) +
-  annotate("text", x = 0.4, y = 660, 
-           label = "inkongruent",
-           vjust = "center", hjust = "left",
-           color = cbPalette[2]) +
-  annotate("text", x = 0.4, y = 630, 
-           label = "neutral",
-           vjust = "center", hjust = "left",
-           color = cbPalette[3])
-
-# violin plots statt bars
-
-viol <- ggplot(df, mapping = aes(x = Kontext, y = RT,
-                        fill = Kongruenz)) +
-  geom_violin(position = position_dodge(0.6),
-              alpha = 0.4,
-              width = 0.5,
-              color = NA,
-              bw = 12) +
-  stat_summary(aes(fill = Kongruenz),
-               position = position_dodge(0.6),
-               fun = "mean",
-               geom = "point",
-               pch = 21,
-               alpha = 0.8,
-               size = 3) +
-  scale_fill_manual(values = cbPalette) +
-  geom_dotplot(binaxis = "y",
-               stackdir = "center",
-               dotsize = 0.5,
-               position = position_dodge(0.6),
-               color = NaN) +
-  coord_cartesian(ylim = c(450, 750)) + 
-  scale_y_continuous(name = "Reaktionszeit (ms)") + 
-  theme_classic() + 
-  theme(legend.title = element_blank(),
-        axis.title.x = element_blank(),
-        #axis.line.x = element_blank(),
-        axis.text.x = element_blank(),
-        legend.position = c(0.15, 0.85))
-
-
-barp <- ggplot(df, 
-               mapping = aes(x = Kontext, y = ER,
-                             fill = Kongruenz)) +
-  geom_bar(aes(group = Kongruenz), 
-           stat = "summary",
-           fun.data = "mean_se",
-           fun.args = list(mult = 1), # 1 SE
            width = 0.5,
            position = position_dodge(0.6),
            alpha = 0.4) +
@@ -126,6 +47,37 @@ barp <- ggplot(df,
   theme_classic() +
   theme(legend.position = "none") +
   scale_y_continuous(name = "Fehlerrate (%)") 
+
+# violin plots 
+viol <- ggplot(df, mapping = aes(x = Kontext, y = RT,
+                        fill = Kongruenz)) +
+  geom_violin(position = position_dodge(0.6),
+              alpha = 0.4,
+              width = 0.5,
+              color = NA,
+              bw = 12) +
+  geom_dotplot(binaxis = "y",
+               stackdir = "center",
+               dotsize = 1.5,
+               position = position_dodge(0.6),
+               color = NaN) +
+  scale_fill_manual(values = cbPalette) +
+  geom_pointrange(aes(group = Kongruenz),
+                 stat = "summary",
+                 fun.data = "mean_se",
+                 fun.args = list(mult = 1), # 1 SE
+                 position = position_dodge(0.6),
+                 size = 0.5) + 
+  coord_cartesian(ylim = c(450, 750)) + 
+  scale_y_continuous(name = "Reaktionszeit (ms)") + 
+  theme_classic() + 
+  theme(legend.title = element_blank(),
+        axis.title.x = element_blank(),
+        #axis.line.x = element_blank(),
+        axis.text.x = element_blank(),
+        legend.position = c(0.15, 0.85))
+
+
 
 library(patchwork)
 viol + barp + plot_layout(heights=c(3,1))
@@ -157,7 +109,6 @@ pic1 <- ggplot(df2, mapping = aes(x = Zeitpunkt,
                   stat = "summary",
                   fun.data = "mean_se",
                   fun.args = list(mult = 1), # 1 SE
-                  #width = 0.5,
                   position = position_dodge(0.2),
                   alpha = 0.4) +
   scale_color_manual(values = cbPalette) + 
@@ -200,7 +151,6 @@ df3 <- as_tibble(data.frame(KEE, SE))
 # for continuous x and y
 plt1 <- ggplot(df3, aes(x = KEE, y = SE)) +
   geom_point() + 
-  scale_color_manual(values = cbPalette[2:3]) +
   geom_smooth(method='lm', se = TRUE,
               level = 0.95, fullrange = TRUE) + # 95% CI
   theme_classic() +
@@ -214,3 +164,15 @@ ggMarginal(plt1,
                    #type = "density"), 
                    type = "histogram")
 
+# Legenden
+ggplot(df2, aes(x = Zeitpunkt,
+                y = PANAS_positiv,
+                group = Therapieform)) +
+  geom_line(aes(color = Therapieform),
+            stat = "summary",
+            fun.data = "mean_se",
+            position = position_dodge(0.2),
+            size = 1) +
+  theme(legend.position="none") 
+# theme(legend.title = element_blank())
+# theme(legend.position = c(0.1, 0.8))

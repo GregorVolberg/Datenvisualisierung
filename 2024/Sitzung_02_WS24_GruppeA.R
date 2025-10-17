@@ -152,19 +152,3 @@ plt2 <- ggMarginal(plt1,
                    groupFill = TRUE)
 plt2
 
-# Einlesen von SPSS-Dateien
-library(haven) # is not loaded with tidyverse
-df <- read_sav("example01.sav") %>%
-              pivot_longer(cols = pre:followup,
-                           names_to = "test",
-                           values_to = "score") %>%
-              mutate(across(id:test, as_factor))
-
-# Zweifaktorielle Messwiederholung
-df <- read_sav("example02.sav") %>%
-        pivot_longer(
-          cols = pre_ws:pst_ss,
-          names_to = c("time", "semester"),
-          names_sep = "_",
-          values_to = "score") %>%
-        mutate(across(id:semester, as_factor))

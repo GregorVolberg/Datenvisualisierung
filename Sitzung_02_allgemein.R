@@ -66,20 +66,34 @@ ggplot(mpg, aes(displ, hwy)) +
 myPlot <- ggplot(mpg, aes(displ, hwy)) 
 myPlot + geom_point()
 
-# export
-myPlot <- ggplot(data = mpg, 
-                 mapping = aes(x = displ,
-                               y = hwy)) +
-  scale_x_continuous(name = "Displacement") + 
-  scale_y_continuous(name = "Mileage") +
-  theme_classic() +
-  geom_point()
+# plots arrangieren
+library(patchwork)
 
-# ggfs. Paket svglite installieren
-ggsave(filename = "myPlot.svg", 
-       plot = myPlot,
-       width = 5,
-       height = 5,
-       units = 'cm',
-       dpi = 300)
+g1 = myPlot + geom_point()
+g2 = myPlot + geom_point() + geom_smooth()
 
+g1 | g2
+g1 / g2
+
+g1 <- g1 + labs(tag = "A")
+g2 <- g2 + labs(tag = "B")
+g1 | g2
+
+g1 + g2 + plot_layout(widths = c(1,2))
+
+
+# Einlesen von SPSS-Dateien
+library(haven) # is not loaded with tidyverse
+df <- read_sav("example01.sav") %>%
+  pivot_longer(cols = pre:followup,
+               names_to = "test",
+               values_to = "score") %>%
+  mutate(across(id:test, as_factor))
+
+df <- read_sav("example02.sav") %>%
+  pivot_longer(
+    cols = pre_ws:pst_ss,
+    names_to = c("time", "semester"),
+    names_sep = "_",
+    values_to = "score") %>%
+  mutate(across(id:semester, as_factor))
