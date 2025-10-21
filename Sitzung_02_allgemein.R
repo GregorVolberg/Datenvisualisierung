@@ -86,9 +86,9 @@ g1 + g2 + plot_layout(widths = c(1,2))
 library(haven) # is not loaded with tidyverse
 df <- read_sav("example01.sav") %>%
   pivot_longer(cols = pre:followup,
-               names_to = "test",
+               names_to = "time",
                values_to = "score") %>%
-  mutate(across(id:test, as_factor))
+  mutate(across(id:time, as_factor))
 
 df <- read_sav("example02.sav") %>%
   pivot_longer(

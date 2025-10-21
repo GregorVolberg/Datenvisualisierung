@@ -42,7 +42,7 @@ barp <- ggplot(df, mapping = aes(x = Kontext, y = ER,
                  fun.data = "mean_se",
                  fun.args = list(mult = 1), # 1 SE
                  position = position_dodge(0.6),
-                 size = 1) + 
+                 linewidth = 1) + 
   coord_cartesian(ylim = c(0,15)) +
   theme_classic() +
   theme(legend.position = "none") +
