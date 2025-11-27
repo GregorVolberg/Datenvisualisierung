@@ -25,6 +25,31 @@ df = as_tibble(data.frame(
   sozEingeb,
   traitAngst))
 
+# add binned variable KI_category
+df <- df %>% mutate(KI_category = 
+         as_factor(case_when(
+           KI < quantile(KI, 1/3) ~ "low",
+           KI > quantile(KI, 2/3) ~ "high",
+           .default = "medium"
+         )))
+
+ggplot(df, aes(x = traitAngst, 
+               y = sozEingeb,
+               color = KI_category)) +
+  geom_smooth(method='lm', se = TRUE,
+              level = 0.95,  
+              fullrange = TRUE) + # 95% CI
+  geom_point() + 
+  scale_fill_manual(values = cbPalette)  +
+  scale_color_manual(values = cbPalette) +
+  theme_classic() +
+  labs(x = 'Trait-Angst', y = 'Soziale Eingebundenheit', color = 'KI') + 
+  theme(legend.position="inside",
+        legend.position.inside = c(0.1, 0.8)) + 
+  coord_cartesian(ylim = c(0,20),
+                  xlim = c(0,12)) 
+
+
 ## ASTRID
 n  <- 46
 id        <- as_factor(1:n)
@@ -36,17 +61,120 @@ df = as_tibble(data.frame(
   condition = rep(condition, each = length(trial)),
   bis_error = rnorm(n * length(trial) * length(condition))))
 
+
+library(ggExtra)
+
+plt1 <- df %>% 
+  filter(condition == 1) %>%
+  group_by(id) %>%
+  mutate(m_error = mean(bis_error)) %>%
+  ungroup() %>%
+  ggplot(., aes(x = bis_error, y = reorder(id, m_error))) +
+  geom_vline(xintercept = 0, linetype = 'dashed') +
+  geom_point(color = 'gray80') +
+  #geom_point(aes(color = trial)) +
+  #scale_color_manual(values = c('gray30', 'gray40', 'gray50', 'gray60', 'gray70')) +
+  geom_pointrange(stat = "summary",
+                  fun.data = "mean_se",
+                  fun.args = list(mult = 1), # 1 SE
+                  #position = position_dodge(0.6),
+                  linewidth = 1,
+                  color = 'black') +
+  theme_classic() +
+  coord_cartesian(xlim = c(-2.5,2.5)) + 
+  theme(axis.text.y  = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.line.y  = element_blank(),
+        axis.title.y = element_blank()) +
+  labs(x = 'Bisection Error (%)', 
+       title = "Baseline")  +
+  annotate("text", x = 2, y = 5,
+           label = c('p = .021'),
+           vjust = 'bottom', hjust = 'center')
+ggMarginal(plt1, groupColour = TRUE, groupFill = TRUE, margins = "x")
+
+
+condition_labels <- c('normal', 'left swipe', 'right swipe', 'blind')
+p_labels <- c('.236', '.564', '.823', '.197')
+pplt <- list(4) # allocate
+for (k in 1:4){
+  plt1 <- df %>% 
+    filter(condition == k) %>%
+    group_by(id) %>%
+    mutate(m_error = mean(bis_error)) %>%
+    ungroup() %>%
+    ggplot(., aes(x = bis_error, y = reorder(id, m_error))) +
+    geom_vline(xintercept = 0, linetype = 'dashed') +
+    geom_point(color = 'gray80') +
+    #geom_point(aes(color = trial)) +
+    #scale_color_manual(values = c('gray30', 'gray40', 'gray50', 'gray60', 'gray70')) +
+    geom_pointrange(stat = "summary",
+                    fun.data = "mean_se",
+                    fun.args = list(mult = 1), # 1 SE
+                    #position = position_dodge(0.6),
+                    linewidth = 1,
+                    color = cbPalette[k]) +
+    theme_classic() +
+    coord_cartesian(xlim = c(-2.5,2.5)) + 
+    theme(axis.text.y  = element_blank(),
+          axis.ticks.y = element_blank(),
+          axis.line.y  = element_blank(),
+          axis.title.y = element_blank()) +
+    labs(x = 'Bisection Error (%)', 
+         title = condition_labels[k])  +
+    annotate("text", x = 2, y = 5,
+             label = c('p = .021'),
+             vjust = 'bottom', hjust = 'center')
+pplt[[k]] <- ggMarginal(plt1,
+                        groupColour = TRUE,
+                        groupFill = TRUE,
+                        margins = "x")
+}
+
+library(patchwork)
+(pplt[[1]]|pplt[[2]])/(pplt[[3]]|pplt[[4]])
+  
+ggMarginal(plt1, groupColour = TRUE, groupFill = TRUE, margins = "x")
+
+# see https://stackoverflow.com/questions/31993704/storing-ggplot-objects-in-a-list-from-within-loop-in-r
+
+
 ## PAULA
 N1 <- 100
 N2 <- 41
-N  <- N1+N2
-df = as_tibble(data.frame(
-  id            = as_factor(str_pad(1:N,3, pad="0")),
-  Geschlecht    = as_factor(c(rep('F', N1), rep('M', N2))),
-  Fuehrungsstil = rnorm(N, 10, 2),
-  Wohlbefinden  = rnorm(N, 10, 2)))
-# see https://stackoverflow.com/questions/72894192/how-to-simulate-a-strong-correlation-of-data-with-r
-# https://cran.r-project.org/web/packages/GenOrd/GenOrd.pdf
+sigma1  <- rbind(c(1,0.342), c(.342,1)) # correlation matrix
+sigma2  <- rbind(c(1,0.192), c(.192,1)) # correlation matrix
+mu      <- c(10, 10) # mean of variables
+corrmat <- rbind(MASS::mvrnorm(n = N1, mu=mu,
+                               Sigma=sigma1,
+                               empirical = TRUE),
+                 MASS::mvrnorm(n = N2, mu=mu,
+                               Sigma=sigma2,
+                               empirical = TRUE))
+
+df = as_tibble(c(data.frame(
+  id = as_factor(str_pad(1:(N1+N2),3, pad="0")),
+  Geschlecht = as_factor(c(rep('Frau', N1), rep('Mann', N2))),
+  corrmat))) %>%
+  rename(Fuehrungsstil = 'X1', Wohlbefinden = 'X2')
+
+# wie Paul
+ggplot(df, aes(x = Fuehrungsstil,
+               y = Wohlbefinden,
+               color = Geschlecht)) +
+  geom_smooth(method='lm', se = TRUE,
+              level = 0.95,  
+              fullrange = TRUE) + # 95% CI
+  geom_point() + 
+  scale_fill_manual(values = cbPalette)  +
+  scale_color_manual(values = cbPalette) +
+  theme_classic() +
+  labs(x = 'Führungsstil') + 
+  theme(legend.position="inside",
+        legend.position.inside = c(0.2, 0.8)) + 
+  coord_cartesian(ylim = c(5,15),
+                  xlim = c(5,15)) 
+
 
 ## Michail
 n = 36
@@ -60,42 +188,28 @@ df = as_tibble(data.frame(
   benevolence = rnorm(n*3, 2.2, 0.8),
   integrity   = rnorm(n*3, 3, 0.7)))
 
-
 # bar plot
-ggplot(df, aes(x = intervention, 
-               y = anx_score,
-               fill = time,
-               group = time)) +
+ggplot(df, aes(x = group,
+               y = trust)) +
   geom_bar(stat = "summary",
-           width = 0.5,
-           position = position_dodge(0.6),
+           width = 0.3,
            alpha = 0.4) +
-  geom_jitter(aes(color = time),
-              size = 2,
-              position = position_jitterdodge(
-                jitter.width = 0.2,
-                dodge.width  = 0.6)) +
-  scale_fill_manual(values = cbPalette)  +
-  scale_color_manual(values = cbPalette) +
+  geom_jitter(size = 1.5,
+           width = 0.075) +
   geom_linerange(stat = "summary",
-                 fun.data = "mean_se",
-                 fun.args = list(mult = 1), # 1 SE
-                 position = position_dodge(0.6),
-                 linewidth = 1) + 
-  coord_cartesian(ylim = c(0,65)) +
+           fun.data = "mean_se",
+           fun.args = list(mult = 1), # 1 SE
+           position = position_dodge(0.6),
+           linewidth = 1,
+           color = 'red') + 
+  coord_cartesian(ylim = c(0,6)) +
   theme_classic() +
-  theme(legend.position = c(0.85, 0.7),
-       legend.title = element_blank()) +
-  labs(x = "Intervention", y = "Anxiety Score") + 
-  annotate("segment", x = c(0.9, 1.9, 1), 
-                      xend = c(1.1, 2.1, 2),
-                      y = c(55, 55, 60)) +
-  annotate("text", x = c(1, 2, 1.5),
-                   y = c(56, 56, 61),
-           label = c('p = .034',
-                     'p = .041',
-                     'p = .859'),
-           vjust = 'bottom', hjust = 'center')  
+  labs(x = "Errors", y = "Score", title = "Trust") + 
+  scale_x_discrete(labels= c("Zero", "One", "Five")) + 
+  annotate("text", x = c(0.5),
+                   y = c(5),
+           label = c('p = .034'),
+           vjust = 'bottom', hjust = 'left')  
 
 
 # ANTONIA
