@@ -63,6 +63,7 @@ generate_data_astrid <- function(){
     bis_error = rnorm(n * length(trial) * length(condition))))
 }
 
+
 # color-blind friendly palette, see 
 # http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
 
@@ -93,13 +94,21 @@ df <- generate_data_paul()
 ggplot(df, aes(x = traitAngst, 
                y = sozEingeb,
                color = cut_interval(KI, 3,
-                                    labels = c('low',
-                                               'medium', 'high')))) +
-  ...
+                      labels = c('low',
+                      'medium', 'high')))) +
+  geom_smooth(method='lm', se = TRUE,
+              level = 0.95,  
+              fullrange = TRUE) + # 95% CI
+  geom_point() + 
+  scale_fill_manual(values = cbPalette)  +
+  scale_color_manual(values = cbPalette) +
   theme_classic() +
   labs(x = 'Trait-Angst', y = 'Soziale Eingebundenheit',
        color = 'KI') + 
-  ...
+  theme(legend.position="inside",
+        legend.position.inside = c(0.15, 0.85)) + 
+  coord_cartesian(ylim = c(0,8),
+                  xlim = c(4,8)) 
 
 
 # Michail
@@ -120,9 +129,14 @@ ggplot(df, aes(x = group,
   coord_cartesian(ylim = c(0,6)) +
   theme_classic() +
   labs(x = "Errors", y = "Score", title = "Trust") + 
-  scale_x_discrete(labels= c("Zero", "One", "Five"))
+  scale_x_discrete(labels= c("Zero", "One", "Five")) + 
+  annotate("text", x = c(0.5),
+           y = c(5),
+           label = c('p = .034'),
+           vjust = 'bottom', hjust = 'left')  
 
 # Astrid
+
 library(ggExtra)
 df <- generate_data_astrid()
 plot1 <- df %>% 
@@ -133,6 +147,8 @@ plot1 <- df %>%
   ggplot(., aes(x = bis_error, y = reorder(id, m_error))) +
   geom_vline(xintercept = 0, linetype = 'dashed') +
   geom_point(color = 'gray80') +
+  #geom_point(aes(color = trial)) +
+  #scale_color_manual(values = c('gray30', 'gray40', 'gray50', 'gray60', 'gray70')) +
   geom_pointrange(stat = "summary",
                   fun.data = "mean_se",
                   fun.args = list(mult = 1), # 1 SE
@@ -157,4 +173,3 @@ library(patchwork)
 gplot1 <- ggMarginal(plot1, groupColour = TRUE,
            groupFill = TRUE, margins = "x")
 wrap_elements(gplot1) | wrap_elements(gplot1) 
-
