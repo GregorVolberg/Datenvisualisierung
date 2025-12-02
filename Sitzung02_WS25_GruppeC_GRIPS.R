@@ -140,6 +140,7 @@ plot1 <- df %>%
                   color = 'black') +
   theme_classic() +
   coord_cartesian(xlim = c(-2.5,2.5)) + 
+  scale_x_continuous(limits=c(-2.5, 2.5)) +
   theme(axis.text.y  = element_blank(),
         axis.ticks.y = element_blank(),
         axis.line.y  = element_blank(),
