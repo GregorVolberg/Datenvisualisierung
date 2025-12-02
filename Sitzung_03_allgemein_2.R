@@ -6,6 +6,16 @@ dev.new(width = mm2inch(90),
         height = mm2inch(90*4/5),
         noRStudioGD=TRUE)
 
+# Anm.: für das Datenbeispiel im Video brauchen Sie die Datei mit den Daten,
+# "sub-S01_task-graspingMotorImagery_events.tsv" (in GRIPS).
+# Alternativ könnnen Sie zum Ausprobieren auch einen Plot mit einem in R 
+# integrierten Datensatz erstellen, zum Beispiel:
+# ggplot(data = mpg, 
+#       mapping = aes(x = displ,
+#                     y = hwy)) +
+#  geom_point(shape = 1) +
+#  theme_classic(base_size = 10)
+
 set.seed(21)
 read_delim('./sub-S01_task-graspingMotorImagery_events.tsv',
            delim = '\t') %>%
@@ -27,9 +37,3 @@ ggsave(filename = "motion.svg",
        units = 'in',
        dpi = 300)
 
-
-# for maintaining size in R graphics devices, see
-# see https://stackoverflow.com/questions/44711236/set-the-size-of-ggsave-exactly
-
-# for text modifications in Inkscape see
-# https://graphicdesign.stackexchange.com/questions/160105/why-changing-font-size-only-changes-height
