@@ -105,6 +105,15 @@ ggplot(df, aes(x = factor_B,
                  size = 1,
                  linewidth = 0.6)
 
+#### ROC ======================
+data = data_marina()
+ggplot(data, aes(x = lure, y = target,
+                 color = task)) + 
+  geom_point() + 
+  geom_line(stat = "summary",
+            fun.data = "mean_se",
+            width = 0.3)
+
 #### Konfektionieren (Beispiel Barplot) ======================
 plt1 <- ggplot(df, aes(x = factor_B,
                y = score,
@@ -134,9 +143,10 @@ plt1 +
   theme_classic() +
   labs(x = "Merkmal", y = "Mittelwert") +
   scale_x_discrete(labels= c("X", "Y", "Z"))  + 
-  #scale_x_discrete(labels= c("very long label A", "very long label B", "very long label C"),
-  #                 guide = guide_axis(n.dodge = 2))  + 
-  # theme(axis.text.x = element_text(angle = 30, vjust = 0.5, hjust=0.5)) +
+  #scale_x_discrete(labels= c("X", "Y", "Z"),
+  #         guide = guide_axis(n.dodge = 2))  + 
+  # theme(axis.text.x = element_text(angle = 30, 
+  #        vjust = 0.5, hjust=0.5)) +
   theme(legend.position="inside",
         legend.position.inside = c(0.2, 0.9),
         legend.title = element_blank()) +
@@ -158,7 +168,8 @@ ggplot(df, aes(x = factor_B,
           alpha = 0.4)
 
 # Modifiziert:
-ggplot(df, aes(x = fct_relevel(factor_B, 'AV2', 'AV1', 'AV3'),
+ggplot(df, aes(x = fct_relevel(factor_B,
+                    'AV2', 'AV1', 'AV3'),
                y = score,
                color = factor_A,
                fill  = factor_A,
