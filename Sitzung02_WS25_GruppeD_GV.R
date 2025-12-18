@@ -1,5 +1,4 @@
 library(tidyverse)
-#library(haven)
 
 data_katja <- function(){
   set.seed(5)
@@ -38,7 +37,6 @@ data_sabrina <- function(){
     mutate(factor_B = as_factor(factor_B))
 }
 
-
 data_anushe <- function(){
   set.seed(5)
   N <- 20*3*4
@@ -61,10 +59,81 @@ data_marina <- function(){
     pivot_wider(., names_from=type, values_from = score) %>%
     filter(criterionValue != "SureLure")
 }
- 
+
+# color-blind friendly palette, see http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
 cbPalette <- c("#999999", "#E69F00", "#56B4E9", 
                "#009E73", "#F0E442", "#0072B2",
                "#D55E00", "#CC79A7")
+
+
+#######====================== Bar plots
+df <- data_sabrina() 
+
+plt1 <- ggplot(df, aes(x = factor_B,
+               y = score,
+               fill  = factor_A,
+               group = factor_A)) +
+  geom_bar(stat = "summary",
+           fun.data = "mean_se",
+           width = 0.3,
+           position = position_dodge(0.6),
+           alpha = 0.4) +
+  geom_jitter(aes(color = factor_A),
+              size = 1.5,
+              position = position_jitterdodge(
+                jitter.width = 0.2,
+                dodge.width  = 0.6)) +
+  geom_linerange(stat = "summary",
+                 fun.data = "mean_se",
+                 fun.args = list(mult = 1), # 1 SE
+                 position = position_dodge(0.6),
+                 linewidth = 1,
+                 color = 'black')
+
+# konfektionieren
+plt1 +
+  coord_cartesian(ylim = c(0,6)) + 
+  scale_fill_manual(values = cbPalette)  +
+  scale_color_manual(values = cbPalette) +
+  theme_classic() +
+  labs(x = "Merkmal", y = "Mittelwert") +
+  scale_x_discrete(labels= c("X", "Y", "Z"))  + 
+  #scale_x_discrete(labels= c("very long label A", "very long label B", "very long label C"),
+  #                 guide = guide_axis(n.dodge = 2))  + 
+  # theme(axis.text.x = element_text(angle = 30, vjust = 0.5, hjust=0.5)) +
+  theme(legend.position="inside",
+        legend.position.inside = c(0.15, 0.9),
+        legend.title = element_blank()) +
+  annotate("text", 
+           x = 2, y = 5,
+           label = 'p = .034',
+           vjust = 'bottom', hjust = 'center')  
+  
+######======== Reihenfolge Kategorien auf x-Achse
+# Original:
+ggplot(df, aes(x = factor_B,
+               y = score,
+               fill  = factor_A,
+               group = factor_A)) +
+  geom_bar(stat = "summary",
+          fun.data = "mean_se",
+          width = 0.3,
+          position = position_dodge(0.6),
+          alpha = 0.4)
+
+# Modifiziert:
+ggplot(df, aes(x = fct_relevel(factor_B, 'AV2', 'AV1', 'AV3'),
+               y = score,
+               color = factor_A,
+               fill  = factor_A,
+               group = factor_A)) +
+  geom_bar(stat = "summary",
+           fun.data = "mean_se",
+           width = 0.3,
+           position = position_dodge(0.6),
+           alpha = 0.4)
+
+####========== Plots arrangieren
 
 
 ## Katja
@@ -174,31 +243,7 @@ plot2 <- df %>%
 
 plot1/plot2
 
-## Sabrina
-df <- data_sabrina()
 
-ggplot(df, aes(x = factor_B,
-               y = score,
-               fill  = factor_A,
-               group = factor_A)) +
-  geom_bar(stat = "summary",
-           fun.data = "mean_se",
-           width = 0.3,
-           position = position_dodge(0.6),
-           alpha = 0.4) +
-  scale_fill_manual(values = cbPalette)  +
-  scale_color_manual(values = cbPalette) +
-  geom_jitter(aes(color = factor_A),
-              size = 1.5,
-              position = position_jitterdodge(
-             jitter.width = 0.2,
-             dodge.width  = 0.6)) +
-  geom_linerange(stat = "summary",
-                 fun.data = "mean_se",
-                 fun.args = list(mult = 1), # 1 SE
-                 position = position_dodge(0.6),
-                 linewidth = 1,
-                 color = 'black') 
 
 ## Anushe
 df = data_anushe()
