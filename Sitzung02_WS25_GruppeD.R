@@ -143,7 +143,7 @@ plt1 +
   theme_classic() +
   labs(x = "Merkmal", y = "Mittelwert") +
   scale_x_discrete(labels= c("X", "Y", "Z"))  + 
-  #scale_x_discrete(labels= c("X", "Y", "Z"),
+  # scale_x_discrete(labels= c("X", "Y", "Z"),
   #         guide = guide_axis(n.dodge = 2))  + 
   # theme(axis.text.x = element_text(angle = 30, 
   #        vjust = 0.5, hjust=0.5)) +
@@ -201,7 +201,7 @@ makeplots <- function(df_in){
 
 splitted_df <- df %>% 
   group_split(factor_C)
-myPlots     <- lapply(splt, FUN = makeplots)
+myPlots     <- lapply(splitted_df, FUN = makeplots)
 
 library(patchwork)
 myPlots[[1]] / myPlots[[2]]
