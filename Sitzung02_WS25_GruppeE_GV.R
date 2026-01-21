@@ -3,7 +3,7 @@
 library(tidyverse)
 library(MASS) # for generating the multivariate normal distribution
 
-set.seed(199)
+set.seed(5)
 
 n <- 192
 M  <- c(6.5, 3.2, 7.0)
@@ -20,7 +20,8 @@ cov_matrix <- diag(SD) %*% cor_matrix %*% diag(SD)
 df <- as_tibble((data.frame(ID = as_factor(1:n),
                       mvrnorm(n = n, 
                               mu = M, 
-                              Sigma = cov_matrix)))) %>%
+                              Sigma = cov_matrix,
+                              empirical = TRUE)))) %>%
                 rename("A" = X1,
                        "B" = X2,
                        "C" = X3)
