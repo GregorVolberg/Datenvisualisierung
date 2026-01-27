@@ -1,11 +1,8 @@
 # WS25, Gruppe E
 ############============= Claude
 library(tidyverse)
-library(MASS) # for generating the multivariate normal distribution
 
-set.seed(5)
-
-n <- 192
+n  <- 192
 M  <- c(6.5, 3.2, 7.0)
 SD <- c(0.2, 0.4, 0.3)
 
@@ -17,8 +14,9 @@ cor_matrix <- matrix(c(
 
 cov_matrix <- diag(SD) %*% cor_matrix %*% diag(SD)
 
+set.seed(5)
 df <- as_tibble((data.frame(ID = as_factor(1:n),
-                      mvrnorm(n = n, 
+                      MASS::mvrnorm(n = n, 
                               mu = M, 
                               Sigma = cov_matrix,
                               empirical = TRUE)))) %>%
