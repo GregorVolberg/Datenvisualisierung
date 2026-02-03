@@ -40,7 +40,7 @@ p1 <- ggplot(df, aes(x = A, y = B)) +
   scale_x_continuous(breaks = seq(6.0, 7.0, 0.2)) +
   scale_y_continuous(breaks = seq(2.0, 4.5, 0.5)) +
   theme_classic() +
-  labs(x = "Instagram-Aktivität", y = "Nutzungshäufigkeit")
+  labs(x = "", y = "Nutzungshäufigkeit")
 
 p2 <- ggplot(df, aes(x = A, y = C)) +
   geom_smooth(method = "lm", se = TRUE, level = 0.95, fullrange = TRUE) +
@@ -58,10 +58,11 @@ p3 <- ggplot(df, aes(x = B, y = C)) +
   scale_x_continuous(breaks = seq(2.0, 4.5, 0.5)) +
   scale_y_continuous(breaks = seq(6.0, 8.0, 0.5)) +
   theme_classic() +
-  labs(x = "Nutzungshäufigkeit", y = "soziale Vergleichsorientierung")
+  labs(x = "Nutzungshäufigkeit", y = "")
 
 library(patchwork)
-p1 + p2 + p3
+(p1 | plot_spacer()) / (p2 | p3)
+
 
 #mit gleichem Skalenbereich 
 
